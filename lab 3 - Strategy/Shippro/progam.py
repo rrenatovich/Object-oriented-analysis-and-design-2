@@ -67,9 +67,12 @@ class PackagingApp:
             calculator = ShippingCalculator(strategies=strategies)
             best = calculator.calculate_price(info = shipment)
 
-            self.result_label.config(
-                text=f"Best shipping price: {best.get_name()} ₽ at {best.get_price()}"
-            )
+            if best.get_name() == "nil" and best.get_price() == float('inf'): 
+                self.result_label.config(text=f"Error: Shipping is unavailable.")
+            else:
+                self.result_label.config(
+                    text=f"Best shipping company: {best.get_name()} at {best.get_price()} ₽"
+                )
 
 if __name__ == "__main__":
     root = tk.Tk()

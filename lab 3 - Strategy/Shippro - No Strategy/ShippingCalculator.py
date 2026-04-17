@@ -32,11 +32,11 @@ class ShippingCalculator:
         
         optimal = min(poc, cde, yan)
 
-        if optimal == poc: return CompanyInfo("pochta.ru", float(poc))
-        if optimal == cde: return CompanyInfo("cdek.ru", float(cde))
-        if optimal == yan: return CompanyInfo("yandex.ru", float(yan))
+        if optimal == poc: return CompanyInfo("pochta.ru", round(float(poc), 2))
+        if optimal == cde: return CompanyInfo("cdek.ru", round(float(cde),2))
+        if optimal == yan: return CompanyInfo("yandex.ru", round(float(yan),2))
         
-        return ("nil", float('inf'))
+        return CompanyInfo("nil", float('inf'))
     
 
 class CompanyInfo:

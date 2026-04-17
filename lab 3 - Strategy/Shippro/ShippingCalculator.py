@@ -17,7 +17,7 @@ class ShippingCalculator:
                 price = cp
                 name = cn
                 
-        return CompanyInfo(round(price, 2), name)
+        return CompanyInfo(name, round(price, 2))
     
 class CompanyInfo:
     def __init__(self, name, price: float):
