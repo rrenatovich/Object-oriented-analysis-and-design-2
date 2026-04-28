@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Money - Banking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .form-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,250,250,0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        input, select {
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            transform: scale(1.02);
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+    <div class="container mx-auto px-4 py-12 max-w-md">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">💱 Transfer Money</h1>
+            <p class="text-white opacity-90">Send money between accounts</p>
+        </header>
+
+        <div class="form-card p-8 rounded-2xl shadow-2xl">
+            <form id="transferForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">From Account</label>
+                    <select id="fromId" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select an account...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">To Account</label>
+                    <select id="toId" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select an account...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Amount</label>
+                    <input type="number" id="amount" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Currency</label>
+                    <select id="transferCurrency" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="USD">USD</option>
+                        <option value="RUB">RUB</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full btn-submit text-white font-semibold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2">
+                    Transfer
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-6">
+            <a href="/index.html" class="inline-block text-white hover:text-blue-200 text-sm font-semibold transition">← Back to Home</a>
+        </div>
+    </div>
+
+    <button id="wipeDataBtn" class="fixed bottom-4 right-4 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-lg transition" title="Wipe all data">
+        🗑️ Wipe Data
+    </button>
+
+    <script>
+        async function loadAccounts() {
+            try {
+                const response = await fetch('/accounts-list');
+                const accounts = await response.json();
+                
+                const fromSelect = document.getElementById('fromId');
+                const toSelect = document.getElementById('toId');
+                
+                accounts.forEach(account => {
+                    const fromOption = document.createElement('option');
+                    fromOption.value = account.id;
+                    fromOption.textContent = `${account.id} (${account.owner}) - ${account.balanceAmount} ${account.balanceCurrency}`;
+                    fromSelect.appendChild(fromOption);
+                    
+                    const toOption = document.createElement('option');
+                    toOption.value = account.id;
+                    toOption.textContent = `${account.id} (${account.owner}) - ${account.balanceAmount} ${account.balanceCurrency}`;
+                    toSelect.appendChild(toOption);
+                });
+            } catch (error) {
+                console.error('Error loading accounts:', error);
+            }
+        }
+
+        document.getElementById('transferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                fromId: document.getElementById('fromId').value,
+                toId: document.getElementById('toId').value,
+                amount: parseInt(document.getElementById('amount').value),
+                currency: document.getElementById('transferCurrency').value
+            };
+            try {
+                const response = await fetch('/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    alert('Transfer successful!');
+                    document.getElementById('transferForm').reset();
+                    loadAccounts();
+                } else {
+                    const errorText = await response.text();
+                    alert('Error: ' + errorText);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        document.getElementById('wipeDataBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
+                try {
+                    const response = await fetch('/wipe-data', {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        alert('All data has been wiped');
+                        location.reload();
+                    } else {
+                        alert('Error wiping data');
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        });
+
+        loadAccounts();
+    </script>
+</body>
+</html>

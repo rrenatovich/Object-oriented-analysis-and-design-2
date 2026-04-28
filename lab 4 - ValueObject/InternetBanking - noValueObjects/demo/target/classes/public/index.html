@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking System - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card-gradient {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,250,250,0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .card-gradient:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+    <div class="container mx-auto px-4 py-12 max-w-2xl">
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-3 drop-shadow-lg">💳 Banking System</h1>
+            <p class="text-white text-lg opacity-90">Manage your accounts and transfers with ease</p>
+        </header>
+
+        <div class="grid grid-cols-1 gap-6">
+            <a href="/create-account.html" class="card-gradient p-8 rounded-2xl shadow-xl">
+                <div class="icon-box bg-gradient-to-br from-green-400 to-green-600 text-white">➕</div>
+                <h2 class="text-2xl font-bold mb-2 text-gray-800">Create Account</h2>
+                <p class="text-gray-600">Create a new bank account with initial balance</p>
+            </a>
+
+            <a href="/transfer.html" class="card-gradient p-8 rounded-2xl shadow-xl">
+                <div class="icon-box bg-gradient-to-br from-blue-400 to-blue-600 text-white">💱</div>
+                <h2 class="text-2xl font-bold mb-2 text-gray-800">Transfer Money</h2>
+                <p class="text-gray-600">Transfer money between accounts instantly</p>
+            </a>
+
+            <a href="/transactions.html" class="card-gradient p-8 rounded-2xl shadow-xl">
+                <div class="icon-box bg-gradient-to-br from-purple-400 to-purple-600 text-white">📊</div>
+                <h2 class="text-2xl font-bold mb-2 text-gray-800">Transaction History</h2>
+                <p class="text-gray-600">View all your transactions in one place</p>
+            </a>
+        </div>
+    </div>
+
+    <button id="wipeDataBtn" class="fixed bottom-4 right-4 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-lg transition" title="Wipe all data">
+        🗑️ Wipe Data
+    </button>
+
+    <script>
+        document.getElementById('wipeDataBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
+                try {
+                    const response = await fetch('/wipe-data', {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        alert('All data has been wiped');
+                        location.reload();
+                    } else {
+                        alert('Error wiping data');
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

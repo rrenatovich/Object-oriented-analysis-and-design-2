@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Banking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .form-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,250,250,0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        input, select {
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            transform: scale(1.02);
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body class="text-gray-900">
+    <div class="container mx-auto px-4 py-12 max-w-md">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2 drop-shadow-lg">➕ Create Account</h1>
+            <p class="text-white opacity-90">Set up your new account</p>
+        </header>
+
+        <div class="form-card p-8 rounded-2xl shadow-2xl">
+            <form id="createAccountForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Account ID</label>
+                    <input type="text" id="accountId" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Owner Name</label>
+                    <input type="text" id="owner" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Initial Amount</label>
+                    <input type="number" id="initialAmount" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Currency</label>
+                    <select id="currency" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                        <option value="USD">USD</option>
+                        <option value="RUB">RUB</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full btn-submit text-white font-semibold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2">
+                    Create Account
+                </button>
+            </form>
+        </div>
+
+        <div class="text-center mt-6">
+            <a href="/index.html" class="inline-block text-white hover:text-blue-200 text-sm font-semibold transition">← Back to Home</a>
+        </div>
+    </div>
+
+    <button id="wipeDataBtn" class="fixed bottom-4 right-4 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow-lg transition" title="Wipe all data">
+        🗑️ Wipe Data
+    </button>
+
+    <script>
+        document.getElementById('createAccountForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('accountId').value,
+                owner: document.getElementById('owner').value,
+                initialAmount: parseInt(document.getElementById('initialAmount').value),
+                currency: document.getElementById('currency').value
+            };
+            try {
+                const response = await fetch('/accounts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    alert('Account created successfully!');
+                    document.getElementById('createAccountForm').reset();
+                } else {
+                    alert('Error creating account');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+
+        document.getElementById('wipeDataBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete all data? This cannot be undone.')) {
+                try {
+                    const response = await fetch('/wipe-data', {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        alert('All data has been wiped');
+                        location.reload();
+                    } else {
+                        alert('Error wiping data');
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
